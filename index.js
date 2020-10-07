@@ -24,7 +24,7 @@ app.get("/postings", (req, res) => {
 
 app.post("/postings", (req, res) => {
   res.send("Posting post");
-  //postings.newPosting();
+  postings.newPosting();
 });
 
 app.put("/postings/:id", (req, res) => {
@@ -32,7 +32,13 @@ app.put("/postings/:id", (req, res) => {
 });
 
 app.delete("/postings/:id", (req, res) => {
-  res.send("Deleting post");
+  try {
+    postings.deletePosting(req.params.id);
+    res.sendStatus(200);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(e);
+  }
 });
 
 app.get("/postings/:id", (req, res) => {

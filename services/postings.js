@@ -1,5 +1,5 @@
 let examplePosting = {
-  id: "1",
+  id: "",
   title: "Testposting",
   price: 200,
   description: "testest",
@@ -15,7 +15,7 @@ let examplePosting = {
 };
 
 let examplePosting2 = {
-  id: "2",
+  id: "",
   title: "Test",
   price: 50,
   description: "testest",
@@ -50,12 +50,27 @@ const getPosting = (id) => {
 
 const newPosting = (posting) => {
   console.log("creating a new posting.");
-  console.log(posting);
+  console.log("current id:" + findLatestId());
+  posting.id = findLatestId();
+  //console.log(posting);
 
   postings.push(posting);
 };
 
-const deletePosting = (id) => {};
+const findLatestId = () => {
+  return postings.length;
+};
+
+const deletePosting = (id) => {
+  let index = postings.findIndex((post) => post.id == id);
+  if (index == -1) {
+    throw 404;
+  }
+  console.log("deleting: ");
+  console.log(postings[index]);
+  
+  postings.splice(index, 1);
+};
 
 const editPosting = (id, newPosting) => {};
 
