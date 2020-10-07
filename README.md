@@ -1,0 +1,2 @@
+# kauppa-api
+ School assingment
