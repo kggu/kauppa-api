@@ -23,8 +23,9 @@ app.get("/postings", (req, res) => {
 });
 
 app.post("/postings", (req, res) => {
-  res.send("Posting post");
-  postings.newPosting();
+  console.log(req.body);
+  postings.newPosting(req.body);
+  res.sendStatus(200);
 });
 
 app.put("/postings/:id", (req, res) => {

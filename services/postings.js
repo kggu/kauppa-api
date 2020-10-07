@@ -31,6 +31,7 @@ let examplePosting2 = {
 };
 
 let postings = [];
+const validPostingKeys = ["title", "description", "category"];
 
 const getAllPostings = () => {
   console.log("getting all postings.");
@@ -48,11 +49,21 @@ const getPosting = (id) => {
   return post;
 };
 
+const validatePosting = (posting) => {};
+
+const getTimeDate = () => {
+  let date = new Date();
+  return (
+    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+  );
+};
+
 const newPosting = (posting) => {
   console.log("creating a new posting.");
   console.log("current id:" + findLatestId());
   posting.id = findLatestId();
-  //console.log(posting);
+  posting.date = getTimeDate();
+  console.log(posting);
 
   postings.push(posting);
 };
@@ -68,7 +79,7 @@ const deletePosting = (id) => {
   }
   console.log("deleting: ");
   console.log(postings[index]);
-  
+
   postings.splice(index, 1);
 };
 
