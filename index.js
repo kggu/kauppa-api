@@ -3,35 +3,41 @@ const app = express();
 const port = 3000;
 
 const bodyParser = require("body-parser");
-
 app.use(bodyParser.json());
 
-const postings = require("./services/postings");
-const {
-  getAllPostings,
-  examplePosting,
-  examplePosting2,
-} = require("./services/postings");
+
+const PostService = require("./services/postings");
+
+/* TODO:
+  - post editing
+  - authentication / validation in routes
+  - image uploading
+  - created_by in posts, so we can validate deletions/editing etc
+  - searching
+*/
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("kauppa-api");
 });
 
 app.get("/postings", (req, res) => {
-  let posts = getAllPostings();
+  let posts = PostService.getAllPostings();
   res.json(posts);
 });
 
 app.post("/postings", (req, res) => {
   try {
-    if (postings.isValidPost(req.body)) {
-      postings.newPosting(req.body);
+    if (PostService.isValidPost(req.body)) {
+      console.log("creating new...");
+      PostService.newPosting(req.body);
     } else {
       res.sendStatus(400);
+      return;
     }
   } catch (e) {
     console.log(e);
     res.sendStatus(500);
+    return;
   }
 
   res.sendStatus(200);
@@ -43,7 +49,7 @@ app.put("/postings/:id", (req, res) => {
 
 app.delete("/postings/:id", (req, res) => {
   try {
-    postings.deletePosting(req.params.id);
+    PostService.deletePosting(req.params.id);
     res.sendStatus(200);
   } catch (e) {
     console.log(e);
@@ -53,7 +59,7 @@ app.delete("/postings/:id", (req, res) => {
 
 app.get("/postings/:id", (req, res) => {
   console.log("Getting specific id");
-  let post = postings.getPosting(req.params.id);
+  let post = PostService.getPosting(req.params.id);
   if (post === undefined) {
     res.send(404);
   }
@@ -61,7 +67,7 @@ app.get("/postings/:id", (req, res) => {
 });
 
 app.listen(port, () => {
-  postings.newPosting(examplePosting);
-  postings.newPosting(examplePosting2);
+  PostService.newPosting(PostService.examplePosting);
+  PostService.newPosting(PostService.examplePosting2);
   console.log(`Example app listening at http://localhost:${port}`);
 });

@@ -74,36 +74,45 @@ const getTimeDate = () => {
 const isValidPost = (posting) => {
   console.log("validating");
   console.log(posting);
-  console.log("----");
   // Check if we have all the valid keys. "title" "description" "category" "delivery" "price" "contact"
   if (!validPostingKeys.every((key) => Object.keys(posting).includes(key))) {
     return false;
   }
-  if (posting.price > 0) {
+  if (posting.price < 0) {
     return false;
   }
-  if (posting.title.length >= 0 || posting.description.length >= 0) {
+  if (posting.title.length === 0 || posting.description.length === 0) {
     return false;
   }
 
-  console.log("valid posting");
   return true;
 };
 
 const newPosting = (posting) => {
-  //console.log("creating a new posting.");
-  console.log("current id:" + getLatestId());
-  posting.id = getLatestId();
-  posting.date = getTimeDate();
-  //console.log(posting);
 
-  postings.push(posting);
+  let newPosting = {
+    id: getLatestId(),
+    title: posting.title,
+    price: posting.price,
+    description: posting.description,
+    category: posting.category,
+    images: posting.images,
+    delivery: posting.delivery,
+    date: getTimeDate(),
+    contact: posting.contact,
+  };
+
+  console.log("current id:" + getLatestId());
+
+  postings.push(newPosting);
 };
 
 const getLatestId = () => {
   return postings.length;
 };
 
+
+// Change this later on, handle errors on the index.js function
 const deletePosting = (id) => {
   let index = postings.findIndex((post) => post.id == id);
   if (index == -1) {
