@@ -31,44 +31,76 @@ let examplePosting2 = {
 };
 
 let postings = [];
-const validPostingKeys = ["title", "description", "category"];
+
+// Keys that are required when creating a new posting.
+// Images are optional
+const validPostingKeys = [
+  "title",
+  "description",
+  "category",
+  "delivery",
+  "price",
+  "contact",
+];
 
 const getAllPostings = () => {
-  console.log("getting all postings.");
-  console.log(postings);
-
   return postings;
 };
 
 const getPosting = (id) => {
-  console.log("Finding post id: " + id);
   let post = postings.find((post) => post.id == id);
-  console.log("found: ");
-  console.log(post);
+  //console.log(post);
 
   return post;
 };
 
-const validatePosting = (posting) => {};
-
 const getTimeDate = () => {
   let date = new Date();
   return (
-    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+    date.getFullYear() +
+    "-" +
+    (date.getMonth() + 1) +
+    "-" +
+    date.getDate() +
+    " " +
+    date.getHours() +
+    ":" +
+    date.getMinutes() +
+    ":" +
+    date.getSeconds()
   );
 };
 
-const newPosting = (posting) => {
-  console.log("creating a new posting.");
-  console.log("current id:" + findLatestId());
-  posting.id = findLatestId();
-  posting.date = getTimeDate();
+const isValidPost = (posting) => {
+  console.log("validating");
   console.log(posting);
+  console.log("----");
+  // Check if we have all the valid keys. "title" "description" "category" "delivery" "price" "contact"
+  if (!validPostingKeys.every((key) => Object.keys(posting).includes(key))) {
+    return false;
+  }
+  if (posting.price > 0) {
+    return false;
+  }
+  if (posting.title.length >= 0 || posting.description.length >= 0) {
+    return false;
+  }
+
+  console.log("valid posting");
+  return true;
+};
+
+const newPosting = (posting) => {
+  //console.log("creating a new posting.");
+  console.log("current id:" + getLatestId());
+  posting.id = getLatestId();
+  posting.date = getTimeDate();
+  //console.log(posting);
 
   postings.push(posting);
 };
 
-const findLatestId = () => {
+const getLatestId = () => {
   return postings.length;
 };
 
@@ -91,6 +123,7 @@ module.exports = {
   getAllPostings,
   getPosting,
   newPosting,
+  isValidPost,
   deletePosting,
   editPosting,
 };

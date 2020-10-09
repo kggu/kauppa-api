@@ -23,8 +23,17 @@ app.get("/postings", (req, res) => {
 });
 
 app.post("/postings", (req, res) => {
-  console.log(req.body);
-  postings.newPosting(req.body);
+  try {
+    if (postings.isValidPost(req.body)) {
+      postings.newPosting(req.body);
+    } else {
+      res.sendStatus(400);
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+
   res.sendStatus(200);
 });
 
