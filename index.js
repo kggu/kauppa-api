@@ -21,7 +21,6 @@ const { authBasic } = require("./services/auth");
     /logout
 */
 
-
 app.get("/", (req, res) => {
   res.send("kauppa-api");
 });
@@ -41,7 +40,12 @@ app.put("/postings/:id", authBasic, PostService.editPosting);
 
 app.delete("/postings/:id", authBasic, PostService.deletePosting);
 
+app.get("/postings/search/", PostService.searchPostings);
+
 app.get("/postings/:id", PostService.getPosting);
+
+
+
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);

@@ -122,7 +122,7 @@ const newPosting = (req, res) => {
     };
 
     console.log("creating post id:" + getLatestId() + " | " + newPosting.title);
-    
+
     postings.push(newPosting);
     res.status(200).send("Created new posting!");
     return;
@@ -156,7 +156,6 @@ const deletePosting = (req, res) => {
   }
 
   try {
-
     postings.splice(index, 1);
     res.status(200).send("Posting deleted!");
     return;
@@ -200,18 +199,32 @@ const editPosting = (req, res) => {
     return;
   }
 };
+// http://localhost:3000/postings/search?location=Oulu&category=Pelit&date=2020-10-13
 
-const searchPostings = (date, location, category) => {
+const searchPostings = (req, res) => {
+  console.log(req.query);
+
+  const location = req.query.location;
+  const category = req.query.category;
+  const date = req.query.date; // ISO 8601
+
+  if (location === undefined && category === undefined && date === undefined) {
+    res.status(400).send("No search parameters!");
+    return;
+  }
+  
   console.log(
-    "searching | date: " +
-      date +
-      " | location: " +
+    "searching | location: " +
       location +
       " | category: " +
-      category
+      category +
+      " | date: " +
+      date
   );
 
   let result = [];
+
+  res.sendStatus(200);
 };
 
 module.exports = {
