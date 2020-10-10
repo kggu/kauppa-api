@@ -89,7 +89,6 @@ const isValidPost = (posting) => {
 };
 
 const newPosting = (posting) => {
-
   let newPosting = {
     id: getLatestId(),
     title: posting.title,
@@ -111,7 +110,6 @@ const getLatestId = () => {
   return postings.length;
 };
 
-
 // Change this later on, handle errors on the index.js function
 const deletePosting = (id) => {
   let index = postings.findIndex((post) => post.id == id);
@@ -124,7 +122,29 @@ const deletePosting = (id) => {
   postings.splice(index, 1);
 };
 
-const editPosting = (id, newPosting) => {};
+const editPosting = (id, newPosting) => {
+  console.log("editing id: " + id);
+  let index = postings.findIndex((post) => post.id == id);
+  if (index == -1) {
+    return;
+  }
+
+  postings[index] = newPosting;
+};
+
+const searchPostings = (date, location, category) => {
+  console.log(
+    "searching | date: " +
+      date +
+      " | location: " +
+      location +
+      " | category: " +
+      category
+  );
+
+  let result = [];
+
+};
 
 module.exports = {
   examplePosting, // debug
@@ -135,4 +155,5 @@ module.exports = {
   isValidPost,
   deletePosting,
   editPosting,
+  searchPostings,
 };

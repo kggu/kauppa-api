@@ -5,7 +5,6 @@ const port = 3000;
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
-
 const PostService = require("./services/postings");
 
 /* TODO:
@@ -14,6 +13,7 @@ const PostService = require("./services/postings");
   - image uploading
   - created_by in posts, so we can validate deletions/editing etc
   - searching
+  - proper error responses
 */
 
 app.get("/", (req, res) => {
@@ -44,7 +44,20 @@ app.post("/postings", (req, res) => {
 });
 
 app.put("/postings/:id", (req, res) => {
-  res.send("Editing post");
+  try {
+    if (PostService.isValidPost(req.body)) {
+      PostService.editPosting(req.params.id);
+    } else {
+      res.sendStatus(400);
+      return;
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+    return;
+  }
+
+  res.sendStatus(200);
 });
 
 app.delete("/postings/:id", (req, res) => {
@@ -69,5 +82,5 @@ app.get("/postings/:id", (req, res) => {
 app.listen(port, () => {
   PostService.newPosting(PostService.examplePosting);
   PostService.newPosting(PostService.examplePosting2);
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Listening at http://localhost:${port}`);
 });
