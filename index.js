@@ -1,5 +1,4 @@
 const express = require("express");
-
 const bodyParser = require("body-parser");
 
 const port = 3000;
@@ -13,22 +12,15 @@ const { authBasic } = require("./services/auth");
 
 /* TODO:
   - tests
-  - post editing
-  - authentication / validation in routes
   - image uploading
-  - created_by in posts, so we can validate deletions/editing etc
   - searching
-  - proper error responses
-  - created_by in posting object
+  - cleanup auth code
   - proper models for Postings/Users
+  - uninstall non-required packages etc. cleanup.
   - more routes
     /logout
-
-  - move all the logic to their own services.
-    only show routes here,
-    or split routes in their own files.
 */
-//
+
 
 app.get("/", (req, res) => {
   res.send("kauppa-api");
@@ -47,16 +39,7 @@ app.post("/postings", authBasic, PostService.newPosting);
 
 app.put("/postings/:id", authBasic, PostService.editPosting);
 
-
-app.delete("/postings/:id", authBasic, (req, res) => {
-  try {
-    PostService.deletePosting(req.params.id, req.user.id);
-    res.status(200).send("Deleted!");
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(e);
-  }
-});
+app.delete("/postings/:id", authBasic, PostService.deletePosting);
 
 app.get("/postings/:id", PostService.getPosting);
 

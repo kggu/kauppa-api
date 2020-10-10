@@ -122,6 +122,7 @@ const newPosting = (req, res) => {
     };
 
     console.log("creating post id:" + getLatestId() + " | " + newPosting.title);
+    
     postings.push(newPosting);
     res.status(200).send("Created new posting!");
     return;
@@ -136,21 +137,34 @@ const getLatestId = () => {
   return postings.length;
 };
 
-// Change this later on, current error handling is total spaghetti.
-const deletePosting = (id, userId) => {
+// TODO: refactor variables.
+const deletePosting = (req, res) => {
+  const id = req.params.id;
+  const userId = req.user.id;
+
   console.log("id: " + id + " |userId: " + userId);
+
   let index = postings.findIndex((post) => post.id == id);
+
   if (index == -1) {
-    throw 404;
+    res.status(404).send("Posting not found!");
+    return;
   }
   if (postings[index].createdBy != userId) {
-    console.log("Forbidden deletion");
-    throw 403;
+    res.status("403").send("Deletion forbidden!");
+    return;
   }
-  console.log("deleting: ");
-  console.log(postings[index]);
 
-  postings.splice(index, 1);
+  try {
+
+    postings.splice(index, 1);
+    res.status(200).send("Posting deleted!");
+    return;
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+    return;
+  }
 };
 
 //TODO: refactor variables.
@@ -179,7 +193,7 @@ const editPosting = (req, res) => {
 
   try {
     postings[index] = newPosting;
-    res.status(200).send("Posting edited!")
+    res.status(200).send("Posting edited!");
   } catch (e) {
     console.log(e);
     res.sendStatus(500);
