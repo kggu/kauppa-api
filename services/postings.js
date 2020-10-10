@@ -1,38 +1,37 @@
-let examplePosting = {
-  id: "",
-  createdBy: "",
-  title: "Testposting",
-  price: 200,
-  description: "testest",
-  category: "All",
-  images: [{ url: "" }],
-  delivery: true,
-  date: "1900-01-10",
-  contact: {
-    name: "Erkki",
-    phone: "+3458232312",
-    address: "Tuomiontie 666",
+let postings = [
+  {
+    id: "0",
+    createdBy: "1",
+    title: "Test",
+    price: 50,
+    description: "testest",
+    category: "All",
+    images: [{ url: "" }],
+    delivery: true,
+    date: "1900-01-10",
+    contact: {
+      name: "a",
+      phone: "040404040",
+      address: "TT 12",
+    },
   },
-};
-
-let examplePosting2 = {
-  id: "",
-  createdBy: "",
-  title: "Test",
-  price: 50,
-  description: "testest",
-  category: "All",
-  images: [{ url: "" }],
-  delivery: true,
-  date: "1900-01-10",
-  contact: {
-    name: "a",
-    phone: "040404040",
-    address: "TT 12",
+  {
+    id: "1",
+    createdBy: "2",
+    title: "Testposting",
+    price: 200,
+    description: "testest",
+    category: "All",
+    images: [{ url: "" }],
+    delivery: true,
+    date: "1900-01-10",
+    contact: {
+      name: "Erkki",
+      phone: "+3458232312",
+      address: "Tuomiontie 666",
+    },
   },
-};
-
-let postings = [];
+];
 
 // Keys that are required when creating a new posting.
 // Images are optional
@@ -114,10 +113,15 @@ const getLatestId = () => {
 };
 
 // Change this later on, current error handling is total spaghetti.
-const deletePosting = (id) => {
+const deletePosting = (id, userId) => {
+  console.log("id: " + id + " |userId: " + userId);
   let index = postings.findIndex((post) => post.id == id);
   if (index == -1) {
     throw 404;
+  }
+  if (postings[index].createdBy != userId) {
+    console.log("Forbidden deletion");
+    throw 403;
   }
   console.log("deleting: ");
   console.log(postings[index]);
@@ -125,13 +129,15 @@ const deletePosting = (id) => {
   postings.splice(index, 1);
 };
 
-const editPosting = (id, newPosting) => {
+const editPosting = (id, newPosting, userId) => {
   console.log("editing id: " + id);
   let index = postings.findIndex((post) => post.id == id);
   if (index == -1) {
     return;
   }
-
+  if (postings[index].createdBy != userId) {
+    throw 403;
+  }
   postings[index] = newPosting;
 };
 
@@ -146,12 +152,9 @@ const searchPostings = (date, location, category) => {
   );
 
   let result = [];
-
 };
 
 module.exports = {
-  examplePosting, // debug
-  examplePosting2,
   getAllPostings,
   getPosting,
   newPosting,

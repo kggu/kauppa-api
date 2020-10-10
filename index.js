@@ -12,6 +12,7 @@ const auth = require("./services/auth");
 const { authBasic } = require("./services/auth");
 
 /* TODO:
+  - tests
   - post editing
   - authentication / validation in routes
   - image uploading
@@ -51,12 +52,12 @@ app.post("/postings", authBasic, (req, res) => {
       console.log("creating new...");
       PostService.newPosting(req.body, req.user.id);
     } else {
-      res.sendStatus(400);
+      res.status(400).send("Invalid request");
       return;
     }
   } catch (e) {
     console.log(e);
-    res.sendStatus(500);
+    res.status(500).send("Something went REALLY wrong.");
     return;
   }
 
@@ -82,8 +83,8 @@ app.put("/postings/:id", authBasic, (req, res) => {
 
 app.delete("/postings/:id", authBasic, (req, res) => {
   try {
-    PostService.deletePosting(req.params.id);
-    res.sendStatus(200);
+    PostService.deletePosting(req.params.id, req.user.id);
+    res.status(200).send("Deleted!");
   } catch (e) {
     console.log(e);
     res.sendStatus(e);
@@ -91,16 +92,13 @@ app.delete("/postings/:id", authBasic, (req, res) => {
 });
 
 app.get("/postings/:id", (req, res) => {
-  console.log("Getting specific id");
   let post = PostService.getPosting(req.params.id);
   if (post === undefined) {
-    res.send(404);
+    res.status(404).send("Posting not found!");
   }
   res.json(post);
 });
 
 app.listen(port, () => {
-  PostService.newPosting(PostService.examplePosting);
-  PostService.newPosting(PostService.examplePosting2);
   console.log(`Listening at http://localhost:${port}`);
 });
