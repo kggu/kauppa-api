@@ -1,5 +1,6 @@
 let examplePosting = {
   id: "",
+  createdBy: "",
   title: "Testposting",
   price: 200,
   description: "testest",
@@ -16,6 +17,7 @@ let examplePosting = {
 
 let examplePosting2 = {
   id: "",
+  createdBy: "",
   title: "Test",
   price: 50,
   description: "testest",
@@ -88,9 +90,10 @@ const isValidPost = (posting) => {
   return true;
 };
 
-const newPosting = (posting) => {
+const newPosting = (posting, userId) => {
   let newPosting = {
     id: getLatestId(),
+    createdBy: userId ? userId : null,
     title: posting.title,
     price: posting.price,
     description: posting.description,
@@ -110,7 +113,7 @@ const getLatestId = () => {
   return postings.length;
 };
 
-// Change this later on, handle errors on the index.js function
+// Change this later on, current error handling is total spaghetti.
 const deletePosting = (id) => {
   let index = postings.findIndex((post) => post.id == id);
   if (index == -1) {
