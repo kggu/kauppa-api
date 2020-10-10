@@ -30,6 +30,10 @@ const { authBasic } = require("./services/auth");
 */
 //
 
+app.get("/", (req, res) => {
+  res.send("kauppa-api");
+});
+
 app.get("/login", authBasic, auth.generateJWT);
 app.get("/user", authBasic, (req, res) => {
   res.json(req.user);
@@ -37,49 +41,12 @@ app.get("/user", authBasic, (req, res) => {
 
 app.post("/register", auth.registerUser);
 
-app.get("/", (req, res) => {
-  res.send("kauppa-api");
-});
+app.get("/postings", PostService.getAllPostings);
 
-app.get("/postings", (req, res) => {
-  let posts = PostService.getAllPostings();
-  res.json(posts);
-});
+app.post("/postings", authBasic, PostService.newPosting);
 
-app.post("/postings", authBasic, (req, res) => {
-  try {
-    if (PostService.isValidPost(req.body)) {
-      console.log("creating new...");
-      PostService.newPosting(req.body, req.user.id);
-    } else {
-      res.status(400).send("Invalid request");
-      return;
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).send("Something went REALLY wrong.");
-    return;
-  }
+app.put("/postings/:id", authBasic, PostService.editPosting);
 
-  res.sendStatus(200);
-});
-
-app.put("/postings/:id", authBasic, (req, res) => {
-  try {
-    if (PostService.isValidPost(req.body)) {
-      PostService.editPosting(req.params.id);
-    } else {
-      res.status(400).send("Invalid request");
-      return;
-    }
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(500);
-    return;
-  }
-
-  res.sendStatus(200);
-});
 
 app.delete("/postings/:id", authBasic, (req, res) => {
   try {
@@ -91,13 +58,7 @@ app.delete("/postings/:id", authBasic, (req, res) => {
   }
 });
 
-app.get("/postings/:id", (req, res) => {
-  let post = PostService.getPosting(req.params.id);
-  if (post === undefined) {
-    res.status(404).send("Posting not found!");
-  }
-  res.json(post);
-});
+app.get("/postings/:id", PostService.getPosting);
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);

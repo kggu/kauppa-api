@@ -44,15 +44,23 @@ const validPostingKeys = [
   "contact",
 ];
 
-const getAllPostings = () => {
-  return postings;
+const getAllPostings = (req, res) => {
+  res.json(postings);
 };
 
-const getPosting = (id) => {
-  let post = postings.find((post) => post.id == id);
-  //console.log(post);
+const getPosting = (req, res) => {
+  if (isNaN(req.params.id) || req.params.id < 0) {
+    res.status(400).send("Bad ID");
+    return;
+  }
 
-  return post;
+  let post = postings.find((post) => post.id == req.params.id);
+  if (post === undefined) {
+    res.status(404).send("Posting not found!");
+    return;
+  }
+
+  res.status(200).json(post);
 };
 
 const getTimeDate = () => {
@@ -89,23 +97,39 @@ const isValidPost = (posting) => {
   return true;
 };
 
-const newPosting = (posting, userId) => {
-  let newPosting = {
-    id: getLatestId(),
-    createdBy: userId ? userId : null,
-    title: posting.title,
-    price: posting.price,
-    description: posting.description,
-    category: posting.category,
-    images: posting.images,
-    delivery: posting.delivery,
-    date: getTimeDate(),
-    contact: posting.contact,
-  };
+//TODO: refactor variables.
+const newPosting = (req, res) => {
+  const posting = req.body;
+  const userId = req.user.id;
 
-  console.log("current id:" + getLatestId());
+  if (!isValidPost(posting)) {
+    res.status(400).send("Invalid request");
+    return;
+  }
 
-  postings.push(newPosting);
+  try {
+    let newPosting = {
+      id: getLatestId(),
+      createdBy: userId ? userId : null,
+      title: posting.title,
+      price: posting.price,
+      description: posting.description,
+      category: posting.category,
+      images: posting.images,
+      delivery: posting.delivery,
+      date: getTimeDate(),
+      contact: posting.contact,
+    };
+
+    console.log("creating post id:" + getLatestId() + " | " + newPosting.title);
+    postings.push(newPosting);
+    res.status(200).send("Created new posting!");
+    return;
+  } catch (e) {
+    console.log(e);
+    res.status(500).send("something went wrong!!!111");
+    return;
+  }
 };
 
 const getLatestId = () => {
@@ -129,16 +153,38 @@ const deletePosting = (id, userId) => {
   postings.splice(index, 1);
 };
 
-const editPosting = (id, newPosting, userId) => {
-  console.log("editing id: " + id);
+//TODO: refactor variables.
+//Refine editing logic:
+// -> check for json keys, don't allow id,date,createdBy editing.
+const editPosting = (req, res) => {
+  const newPosting = req.body;
+  const userId = req.user.id;
+  const id = req.params.id;
+
+  if (!isValidPost(newPosting)) {
+    res.status(400).send("Invalid request");
+    return;
+  }
+
   let index = postings.findIndex((post) => post.id == id);
+
   if (index == -1) {
+    res.status(404).send("Posting not found!");
     return;
   }
   if (postings[index].createdBy != userId) {
-    throw 403;
+    res.status("403").send("Editing forbidden!");
+    return;
   }
-  postings[index] = newPosting;
+
+  try {
+    postings[index] = newPosting;
+    res.status(200).send("Posting edited!")
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+    return;
+  }
 };
 
 const searchPostings = (date, location, category) => {
