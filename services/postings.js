@@ -4,8 +4,9 @@ let postings = [
     createdBy: "1",
     title: "Test",
     price: 50,
+    location: "Oulu",
     description: "testest",
-    category: "All",
+    category: "Pelit",
     images: [{ url: "" }],
     delivery: true,
     date: "1900-01-10",
@@ -20,8 +21,9 @@ let postings = [
     createdBy: "2",
     title: "Testposting",
     price: 200,
+    location: "Kemi",
     description: "testest",
-    category: "All",
+    category: "Kaikki",
     images: [{ url: "" }],
     delivery: true,
     date: "1900-01-10",
@@ -113,6 +115,7 @@ const newPosting = (req, res) => {
       createdBy: userId ? userId : null,
       title: posting.title,
       price: posting.price,
+      location: posting.location,
       description: posting.description,
       category: posting.category,
       images: posting.images,
@@ -202,17 +205,18 @@ const editPosting = (req, res) => {
 // http://localhost:3000/postings/search?location=Oulu&category=Pelit&date=2020-10-13
 
 const searchPostings = (req, res) => {
-  console.log(req.query);
-
   const location = req.query.location;
   const category = req.query.category;
   const date = req.query.date; // ISO 8601
+
+  let searchParams = req.query;
+  console.log(searchParams);
 
   if (location === undefined && category === undefined && date === undefined) {
     res.status(400).send("No search parameters!");
     return;
   }
-  
+
   console.log(
     "searching | location: " +
       location +
@@ -222,9 +226,23 @@ const searchPostings = (req, res) => {
       date
   );
 
-  let result = [];
+  let searchResult = postings.filter((item) => {
+    for (let key in searchParams) {
+      if (item[key] === undefined || item[key] != searchParams[key]) {
+        return false;
+      }
+      return true;
+    }
+  });
 
-  res.sendStatus(200);
+  console.log(searchResult);
+
+  if (searchResult.length === 0) {
+    res.status(200).send("No results found!");
+    return;
+  }
+
+  res.status(200).send(searchResult);
 };
 
 module.exports = {
