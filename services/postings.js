@@ -44,6 +44,7 @@ const validPostingKeys = [
   "delivery",
   "price",
   "contact",
+  "location"
 ];
 
 const getAllPostings = (req, res) => {
@@ -205,26 +206,17 @@ const editPosting = (req, res) => {
 // http://localhost:3000/postings/search?location=Oulu&category=Pelit&date=2020-10-13
 
 const searchPostings = (req, res) => {
-  const location = req.query.location;
-  const category = req.query.category;
-  const date = req.query.date; // ISO 8601
-
   let searchParams = req.query;
   console.log(searchParams);
-
-  if (location === undefined && category === undefined && date === undefined) {
+  
+  if (
+    searchParams.location === undefined &&
+    searchParams.category === undefined &&
+    searchParams.date === undefined
+  ) {
     res.status(400).send("No search parameters!");
     return;
   }
-
-  console.log(
-    "searching | location: " +
-      location +
-      " | category: " +
-      category +
-      " | date: " +
-      date
-  );
 
   let searchResult = postings.filter((item) => {
     for (let key in searchParams) {
@@ -236,7 +228,6 @@ const searchPostings = (req, res) => {
   });
 
   console.log(searchResult);
-
   if (searchResult.length === 0) {
     res.status(200).send("No results found!");
     return;

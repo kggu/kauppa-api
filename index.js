@@ -6,15 +6,15 @@ const app = express();
 app.use(bodyParser.json());
 
 const PostService = require("./services/postings");
-//const users = require("./services/users");
 const auth = require("./services/auth");
 const { authBasic } = require("./services/auth");
 
 /* TODO:
   - tests
   - image uploading
-  - searching
   - cleanup auth code
+  - proper error response codes.
+  - complete post validation
   - proper models for Postings/Users
   - uninstall non-required packages etc. cleanup.
   - more routes
