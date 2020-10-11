@@ -10,7 +10,6 @@ app.use(bodyParser.json());
 const PostService = require("./services/posts");
 
 const auth = require("./services/auth");
-const { authBasic } = require("./services/auth");
 
 const imageHandler = require("./services/imageHandler");
 const cloudinary = require("./utils/cloudinary");
@@ -18,8 +17,9 @@ const cloudinary = require("./utils/cloudinary");
 /* TODO:
   - tests
   - cleanup auth code
-  - proper error response codes.
-  - complete post validation
+  - add explaining comments.
+  - make search case-insensetive
+  - rework post validation
   - proper models for Postings/Users
   - move posting contact info to registeraion?
 */
@@ -28,10 +28,10 @@ app.get("/", (req, res) => {
   res.send("kauppa-api");
 });
 
-app.get("/login", authBasic, (req, res) => {
+app.get("/login", auth.basic, (req, res) => {
   res.status(200).send("Logged in!");
 });
-app.get("/user", authBasic, (req, res) => {
+app.get("/user", auth.basic, (req, res) => {
   res.json(req.user);
 });
 
@@ -39,18 +39,18 @@ app.post("/register", auth.registerUser);
 
 app.get("/postings", PostService.getAllPosts);
 
-app.post("/postings", authBasic, PostService.newPost);
+app.post("/postings", auth.basic, PostService.newPost);
 
 app.put(
   "/postings/:id",
-  authBasic,
+  auth.basic,
   PostService.checkPostOwner,
   PostService.editPost
 );
 
 app.post(
   "/postings/:id/upload",
-  authBasic,
+  auth.basic,
   PostService.checkPostOwner,
   imageHandler.upload,
   cloudinary.uploadItems,
@@ -59,7 +59,7 @@ app.post(
 
 app.delete(
   "/postings/:id",
-  authBasic,
+  auth.basic,
   PostService.checkPostOwner,
   PostService.deletePost
 );

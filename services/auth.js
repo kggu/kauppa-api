@@ -30,17 +30,12 @@ passport.use(
   })
 );
 
-const authBasic = passport.authenticate("basic", { session: false });
+const basic = passport.authenticate("basic", { session: false });
 
-//JWT stuff. currently we only generate the token,
-//and don't use it anywhere.
-
+// JWT currently not used. maybe implement this later.
 /* Configure the passport-jwt module to expect JWT
    in headers from Authorization field as Bearer token */
 options.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-
-/* This is the secret signing key.
-   You should NEVER store it in code  */
 options.secretOrKey = jwtSecretKey.secret;
 
 const registerUser = (req, res) => {
@@ -92,7 +87,7 @@ const generateJWT = (req, res) => {
 };
 
 module.exports = {
-  authBasic,
+  basic,
   generateJWT,
   registerUser,
 };

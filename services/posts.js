@@ -11,9 +11,8 @@ let postings = [
     delivery: true,
     date: "1900-01-10",
     contact: {
-      name: "a",
-      phone: "040404040",
-      address: "TT 12",
+      name: "username",
+      email: "ayy@lamo.fi",
     },
   },
   {
@@ -23,14 +22,13 @@ let postings = [
     price: 200,
     location: "Kemi",
     description: "testest",
-    category: "Kaikki",
+    category: "Kellot",
     images: [{ url: "" }],
     delivery: true,
     date: "1900-01-10",
     contact: {
       name: "Erkki",
-      phone: "+3458232312",
-      address: "Tuomiontie 666",
+      email: "ayy@lmao.fi",
     },
   },
   {
@@ -46,22 +44,9 @@ let postings = [
     date: "1969-4-20",
     contact: {
       name: "Jorma",
-      phone: "+34582342423",
-      address: "Jokukatu 23",
+      email: "x@ddee.fi",
     },
   },
-];
-
-// Keys that are required when creating a new posting.
-// Images are optional
-const validPostingKeys = [
-  "title",
-  "description",
-  "category",
-  "delivery",
-  "price",
-  "contact",
-  "location",
 ];
 
 const getAllPosts = (req, res) => {
@@ -111,8 +96,18 @@ const getTimeDate = () => {
   );
 };
 
+// Keys that are required when creating a new posting.
+const validPostingKeys = [
+  "title",
+  "price",
+  "location",
+  "description",
+  "category",
+  "delivery",
+  //"contact" -> get from req.user
+];
+
 const isValidPost = (posting) => {
-  console.log("validating");
   console.log(posting);
   // Check if we have all the valid keys. "title" "description" "category" "delivery" "price" "contact"
   if (!validPostingKeys.every((key) => Object.keys(posting).includes(key))) {
@@ -146,16 +141,17 @@ const newPost = (req, res) => {
       location: post.location,
       description: post.description,
       category: post.category,
-      images: post.images,
+      images: [],
       delivery: post.delivery,
       date: getTimeDate(),
-      contact: post.contact,
+      contact: {
+        name: req.user.username,
+        email: req.user.email,
+      },
     };
 
-    console.log("creating post id:" + getLatestId() + " | " + newPost.title);
-
     postings.push(newPost);
-    res.status(200).send("Created new posting!");
+    res.status(201).send("Created new posting!");
     return;
   } catch (e) {
     console.log(e);
@@ -184,9 +180,6 @@ const getLatestId = () => {
 const deletePost = (req, res) => {
   const id = req.params.id;
   const userId = req.user.id;
-
-  console.log("id: " + id + " |userId: " + userId);
-
   let index = postings.findIndex((post) => post.id == id);
 
   if (index == -1) {
@@ -205,9 +198,7 @@ const deletePost = (req, res) => {
   }
 };
 
-//TODO: refactor variables.
-//Refine editing logic:
-// -> check for json keys, don't allow id,date,createdBy editing.
+// TODO:Re-check validation logic.
 const editPost = (req, res) => {
   const newPost = req.body;
   const userId = req.user.id;
@@ -219,13 +210,28 @@ const editPost = (req, res) => {
   }
 
   let index = postings.findIndex((post) => post.id == req.params.id);
-
   if (index == -1) {
     res.status(404).send("Posting not found!");
     return;
   }
 
   try {
+    let ogPost = postings[index];
+    // Swap allowed keys with new info
+    let newPost = {
+      id: ogPost.id, // not allowed
+      createdBy: ogPost.createdBy, // not allowed
+      title: req.body.title ? req.body.title : ogPost.title,
+      price: req.body.price ? req.body.price : ogPost.price,
+      location: req.body.location ? req.body.location : ogPost.location,
+      description: req.body.description ? req.body.description : ogPost.description,
+      category: req.body.category ? req.body.category : ogPost.category,
+      images: ogPost.images, // not allowed, use addImage feature.
+      delivery: req.body.delivery ? req.body.delivery : ogPost.delivery,
+      date: ogPost.date, // not allowed, maybe add last_edited etc.?
+      contact: ogPost.contact, // not allowed, tied to user info.
+    };
+
     postings[index] = newPost;
     res.status(200).send("Posting edited!");
   } catch (e) {
@@ -260,7 +266,7 @@ const searchPosts = (req, res) => {
 
   console.log(searchResult);
   if (searchResult.length === 0) {
-    res.status(200).send("No results found!");
+    res.status(200).send([])
     return;
   }
 
