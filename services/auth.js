@@ -7,7 +7,7 @@ const users = require("./users");
 const jwtSecretKey = require("../jwt-key.json");
 const jwt = require("jsonwebtoken");
 const JwtStrategy = require("passport-jwt").Strategy,
-ExtractJwt = require("passport-jwt").ExtractJwt;
+  ExtractJwt = require("passport-jwt").ExtractJwt;
 let options = {};
 // --
 
@@ -32,10 +32,8 @@ passport.use(
 
 const authBasic = passport.authenticate("basic", { session: false });
 
-// - - - - - - - - -
 //JWT stuff. currently we only generate the token,
 //and don't use it anywhere.
-
 
 /* Configure the passport-jwt module to expect JWT
    in headers from Authorization field as Bearer token */
@@ -47,18 +45,20 @@ options.secretOrKey = jwtSecretKey.secret;
 
 const registerUser = (req, res) => {
   if ("username" in req.body == false) {
-    res.status(400);
-    res.json({ status: "Missing username from body" });
+    res.status(400).send("Missing username from body");
     return;
   }
   if ("password" in req.body == false) {
-    res.status(400);
-    res.json({ status: "Missing password from body" });
+    res.status(400).send("Missing password from body");
     return;
   }
   if ("email" in req.body == false) {
-    res.status(400);
-    res.json({ status: "Missing email from body" });
+    res.status(400).send("Missing email from body");
+    return;
+  }
+
+  if (users.usernameExists(req.body.username)) {
+    res.status(400).send("Username already exists!");
     return;
   }
 
@@ -66,7 +66,7 @@ const registerUser = (req, res) => {
   console.log("pw: " + hashedPassword);
   users.addUser(req.body.username, req.body.email, hashedPassword);
 
-  res.status(201).json({ status: "created" });
+  res.status(201).send("Created");
 };
 
 const generateJWT = (req, res) => {
@@ -91,12 +91,8 @@ const generateJWT = (req, res) => {
   return res.json({ token });
 };
 
-//app.get("/login", authBasic, (req, res) => {});
-
 module.exports = {
   authBasic,
   generateJWT,
   registerUser,
 };
-
-//

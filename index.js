@@ -3,18 +3,17 @@ const env = require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const imageHandler = require("./services/imageHandler");
-
 const port = 3000;
 const app = express();
 app.use(bodyParser.json());
 
 const PostService = require("./services/posts");
+
 const auth = require("./services/auth");
 const { authBasic } = require("./services/auth");
-const cloudinary = require("./utils/cloudinary");
 
-const cleanup = require("./utils/cleanup");
+const imageHandler = require("./services/imageHandler");
+const cloudinary = require("./utils/cloudinary");
 
 /* TODO:
   - tests
@@ -23,16 +22,15 @@ const cleanup = require("./utils/cleanup");
   - complete post validation
   - proper models for Postings/Users
   - move posting contact info to registeraion?
-  - uninstall non-required packages etc. cleanup.
-  - more routes
-    /logout
 */
 
 app.get("/", (req, res) => {
   res.send("kauppa-api");
 });
 
-app.get("/login", authBasic, auth.generateJWT);
+app.get("/login", authBasic, (req, res) => {
+  res.status(200).send("Logged in!");
+});
 app.get("/user", authBasic, (req, res) => {
   res.json(req.user);
 });
