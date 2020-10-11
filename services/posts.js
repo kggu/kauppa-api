@@ -66,11 +66,11 @@ const validPostingKeys = [
   "location",
 ];
 
-const getAllPostings = (req, res) => {
+const getAllPosts = (req, res) => {
   res.json(postings);
 };
 
-const checkPostingOwner = (req, res, next) => {
+const checkPostOwner = (req, res, next) => {
   let index = postings.findIndex((post) => post.id == req.params.id);
 
   if (postings[index].createdBy != req.user.id) {
@@ -81,7 +81,7 @@ const checkPostingOwner = (req, res, next) => {
   next(null, true);
 };
 
-const getPosting = (req, res) => {
+const getPost = (req, res) => {
   if (isNaN(req.params.id) || req.params.id < 0) {
     res.status(400).send("Bad ID");
     return;
@@ -131,47 +131,44 @@ const isValidPost = (posting) => {
 };
 
 //TODO: refactor variables.
-const newPosting = (req, res) => {
-  const posting = req.body;
-  const userId = req.user.id;
+const newPost = (req, res) => {
+  const post = req.body;
 
-  if (!isValidPost(posting)) {
+  if (!isValidPost(post)) {
     res.status(400).send("Invalid request");
     return;
   }
 
   try {
-    let newPosting = {
+    let newPost = {
       id: getLatestId(),
-      createdBy: userId ? userId : null,
-      title: posting.title,
-      price: posting.price,
-      location: posting.location,
-      description: posting.description,
-      category: posting.category,
-      images: posting.images,
-      delivery: posting.delivery,
+      createdBy: req.user.id,
+      title: post.title,
+      price: post.price,
+      location: post.location,
+      description: post.description,
+      category: post.category,
+      images: post.images,
+      delivery: post.delivery,
       date: getTimeDate(),
-      contact: posting.contact,
+      contact: post.contact,
     };
 
-    console.log("creating post id:" + getLatestId() + " | " + newPosting.title);
+    console.log("creating post id:" + getLatestId() + " | " + newPost.title);
 
-    postings.push(newPosting);
+    postings.push(newPost);
     res.status(200).send("Created new posting!");
     return;
   } catch (e) {
     console.log(e);
-    res.status(500).send("something went wrong!!!111");
+    res.status(500).send("something went wrong.");
     return;
   }
 };
 
 const addImage = (req, res) => {
-  const id = req.params.id;
-  const userId = req.user.id;
 
-  let index = postings.findIndex((post) => post.id == id);
+  let index = postings.findIndex((post) => post.id == req.params.id);
 
   if (index == -1) {
     res.status(404).send("Posting not found!");
@@ -187,7 +184,7 @@ const getLatestId = () => {
 };
 
 // TODO: refactor variables.
-const deletePosting = (req, res) => {
+const deletePost = (req, res) => {
   const id = req.params.id;
   const userId = req.user.id;
 
@@ -214,12 +211,12 @@ const deletePosting = (req, res) => {
 //TODO: refactor variables.
 //Refine editing logic:
 // -> check for json keys, don't allow id,date,createdBy editing.
-const editPosting = (req, res) => {
-  const newPosting = req.body;
+const editPost = (req, res) => {
+  const newPost = req.body;
   const userId = req.user.id;
   const id = req.params.id;
 
-  if (!isValidPost(newPosting)) {
+  if (!isValidPost(newPost)) {
     res.status(400).send("Invalid request");
     return;
   }
@@ -232,7 +229,7 @@ const editPosting = (req, res) => {
   }
 
   try {
-    postings[index] = newPosting;
+    postings[index] = newPost;
     res.status(200).send("Posting edited!");
   } catch (e) {
     console.log(e);
@@ -242,7 +239,7 @@ const editPosting = (req, res) => {
 };
 // http://localhost:3000/postings/search?location=Oulu&category=Pelit&date=2020-10-13
 
-const searchPostings = (req, res) => {
+const searchPosts = (req, res) => {
   let searchParams = req.query;
   console.log(searchParams);
 
@@ -274,13 +271,13 @@ const searchPostings = (req, res) => {
 };
 
 module.exports = {
-  getAllPostings,
-  getPosting,
-  newPosting,
+  getAllPosts,
+  getPost,
+  newPost,
   addImage,
   isValidPost,
-  deletePosting,
-  editPosting,
-  searchPostings,
-  checkPostingOwner,
+  deletePost,
+  editPost,
+  searchPosts,
+  checkPostOwner,
 };

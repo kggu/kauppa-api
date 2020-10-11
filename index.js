@@ -12,11 +12,10 @@ const port = 3000;
 const app = express();
 app.use(bodyParser.json());
 
-const PostService = require("./services/postings");
+const PostService = require("./services/posts");
 const auth = require("./services/auth");
 const { authBasic } = require("./services/auth");
 const cloudinaryService = require("./services/cloudinary");
-const { checkPostingOwner } = require("./services/postings");
 
 /* TODO:
   - tests
@@ -42,16 +41,16 @@ app.get("/user", authBasic, (req, res) => {
 
 app.post("/register", auth.registerUser);
 
-app.get("/postings", PostService.getAllPostings);
+app.get("/postings", PostService.getAllPosts);
 
-app.post("/postings", authBasic, PostService.newPosting);
+app.post("/postings", authBasic, PostService.newPost);
 
-app.put("/postings/:id", authBasic, checkPostingOwner, PostService.editPosting);
+app.put("/postings/:id", authBasic, PostService.checkPostOwner, PostService.editPost);
 
 app.post(
   "/postings/:id/upload",
   authBasic,
-  PostService.checkPostingOwner,
+  PostService.checkPostOwner,
   imageUploader.upload,
   cloudinaryService.upload,
   PostService.addImage
@@ -60,13 +59,13 @@ app.post(
 app.delete(
   "/postings/:id",
   authBasic,
-  PostService.checkPostingOwner,
-  PostService.deletePosting
+  PostService.checkPostOwner,
+  PostService.deletePost
 );
 
-app.get("/postings/search/", PostService.searchPostings);
+app.get("/postings/search/", PostService.searchPosts);
 
-app.get("/postings/:id", PostService.getPosting);
+app.get("/postings/:id", PostService.getPost);
 
 app.listen(port, () => {
   console.log(process.env.CLOUDINARY_UPLOAD_PRESET);
