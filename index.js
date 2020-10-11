@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const imageUploader = require("./services/imageUploader");
+const cloudinaryUploader = require("./services/cloudinary");
 
 const cloudinary = require("./services/cloudinary");
 
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 const PostService = require("./services/postings");
 const auth = require("./services/auth");
 const { authBasic } = require("./services/auth");
+const cloudinaryService = require("./services/cloudinary");
 
 /* TODO:
   - tests
@@ -28,28 +30,13 @@ const { authBasic } = require("./services/auth");
     /logout
 */
 
-app.post("/test", authBasic, imageUploader.upload, async (req, res) => {
-  req.files.forEach((file) => console.log(file.filename));
-
-  try {
-    const author = req.user.id;
-    console.log("author: " + author);
-    const image = req.files[1];
-    console.log(image);
-
-    const response = await cloudinary.uploader.upload(
-      "uploads/" + image.filename,
-      {
-        upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
-      }
-    );
-    console.log(response);
-  } catch (e) {
-    console.log(e);
-  }
-
-  res.send("Files: " + req.files.length);
-});
+app.post(
+  "/cloudtest",
+  authBasic,
+  imageUploader.upload,
+  cloudinaryService.upload,
+  PostService.addImage
+);
 
 app.get("/", (req, res) => {
   res.send("kauppa-api");

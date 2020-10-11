@@ -159,17 +159,22 @@ const newPosting = (req, res) => {
 const addImage = (req, res) => {
   const id = req.params.id;
   const userId = req.user.id;
+  console.log("--------");
+  console.log("IMAGE URLS:");
+  console.log(req.images);
 
-  let index = postings.findIndex((post) => post.id == id);
+  res.sendStatus(200);
 
-  if (index == -1) {
+  //let index = postings.findIndex((post) => post.id == id);
+
+  /* if (index == -1) {
     res.status(404).send("Posting not found!");
     return;
   }
   if (postings[index].createdBy != userId) {
     res.status("403").send("Uploading forbidden!");
     return;
-  }
+  } */
 };
 
 const getLatestId = () => {
