@@ -70,6 +70,17 @@ const getAllPostings = (req, res) => {
   res.json(postings);
 };
 
+const checkPostingOwner = (req, res, next) => {
+  let index = postings.findIndex((post) => post.id == req.params.id);
+
+  if (postings[index].createdBy != req.user.id) {
+    res.status("403").send("Action forbidden!");
+    return;
+  }
+
+  next(null, true);
+};
+
 const getPosting = (req, res) => {
   if (isNaN(req.params.id) || req.params.id < 0) {
     res.status(400).send("Bad ID");
@@ -159,22 +170,16 @@ const newPosting = (req, res) => {
 const addImage = (req, res) => {
   const id = req.params.id;
   const userId = req.user.id;
-  console.log("--------");
-  console.log("IMAGE URLS:");
-  console.log(req.images);
 
-  res.sendStatus(200);
+  let index = postings.findIndex((post) => post.id == id);
 
-  //let index = postings.findIndex((post) => post.id == id);
-
-  /* if (index == -1) {
+  if (index == -1) {
     res.status(404).send("Posting not found!");
     return;
   }
-  if (postings[index].createdBy != userId) {
-    res.status("403").send("Uploading forbidden!");
-    return;
-  } */
+
+  postings[index].images.push(req.images);
+  res.status(200).send("Images uploaded!");
 };
 
 const getLatestId = () => {
@@ -192,10 +197,6 @@ const deletePosting = (req, res) => {
 
   if (index == -1) {
     res.status(404).send("Posting not found!");
-    return;
-  }
-  if (postings[index].createdBy != userId) {
-    res.status("403").send("Deletion forbidden!");
     return;
   }
 
@@ -227,10 +228,6 @@ const editPosting = (req, res) => {
 
   if (index == -1) {
     res.status(404).send("Posting not found!");
-    return;
-  }
-  if (postings[index].createdBy != userId) {
-    res.status("403").send("Editing forbidden!");
     return;
   }
 
@@ -285,4 +282,5 @@ module.exports = {
   deletePosting,
   editPosting,
   searchPostings,
+  checkPostingOwner,
 };

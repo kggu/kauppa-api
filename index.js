@@ -16,10 +16,11 @@ const PostService = require("./services/postings");
 const auth = require("./services/auth");
 const { authBasic } = require("./services/auth");
 const cloudinaryService = require("./services/cloudinary");
+const { checkPostingOwner } = require("./services/postings");
 
 /* TODO:
   - tests
-  - image uploading
+  - local cleanup for images
   - cleanup auth code
   - proper error response codes.
   - complete post validation
@@ -29,14 +30,6 @@ const cloudinaryService = require("./services/cloudinary");
   - more routes
     /logout
 */
-
-app.post(
-  "/cloudtest",
-  authBasic,
-  imageUploader.upload,
-  cloudinaryService.upload,
-  PostService.addImage
-);
 
 app.get("/", (req, res) => {
   res.send("kauppa-api");
@@ -53,11 +46,23 @@ app.get("/postings", PostService.getAllPostings);
 
 app.post("/postings", authBasic, PostService.newPosting);
 
-app.post("/postings/:id/upload", authBasic, PostService.addImage);
+app.put("/postings/:id", authBasic, checkPostingOwner, PostService.editPosting);
 
-app.put("/postings/:id", authBasic, PostService.editPosting);
+app.post(
+  "/postings/:id/upload",
+  authBasic,
+  PostService.checkPostingOwner,
+  imageUploader.upload,
+  cloudinaryService.upload,
+  PostService.addImage
+);
 
-app.delete("/postings/:id", authBasic, PostService.deletePosting);
+app.delete(
+  "/postings/:id",
+  authBasic,
+  PostService.checkPostingOwner,
+  PostService.deletePosting
+);
 
 app.get("/postings/search/", PostService.searchPostings);
 

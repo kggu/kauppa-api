@@ -25,7 +25,6 @@ const upload = async (req, res, next) => {
 
       let imageObject = {
         url: response.secure_url,
-        userId: req.user.id,
       };
 
       uploadedImages.push(imageObject);
