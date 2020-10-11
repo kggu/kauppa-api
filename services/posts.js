@@ -1,5 +1,3 @@
-const uploader = require("./imageUploader");
-
 let postings = [
   {
     id: "0",
@@ -167,7 +165,6 @@ const newPost = (req, res) => {
 };
 
 const addImage = (req, res) => {
-
   let index = postings.findIndex((post) => post.id == req.params.id);
 
   if (index == -1) {
@@ -221,7 +218,7 @@ const editPost = (req, res) => {
     return;
   }
 
-  let index = postings.findIndex((post) => post.id == id);
+  let index = postings.findIndex((post) => post.id == req.params.id);
 
   if (index == -1) {
     res.status(404).send("Posting not found!");

@@ -6,16 +6,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const upload = async (req, res, next) => {
-  req.files.forEach((file) => console.log(file.filename));
+const uploadItems = async (req, res, next) => {
+  req.files.forEach((file) => console.log(file.path));
 
   let uploadedImages = [];
   try {
     for (const file of req.files) {
-      console.log("uploading:" + file.filename);
 
       const response = await cloudinary.uploader.upload(
-        "uploads/" + file.filename,
+        file.path,
         {
           upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
         }
@@ -40,5 +39,5 @@ const upload = async (req, res, next) => {
 };
 
 module.exports = {
-  upload,
+  uploadItems,
 };

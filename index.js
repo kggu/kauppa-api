@@ -3,10 +3,7 @@ const env = require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const imageUploader = require("./services/imageUploader");
-const cloudinaryUploader = require("./services/cloudinary");
-
-const cloudinary = require("./services/cloudinary");
+const imageHandler = require("./services/imageHandler");
 
 const port = 3000;
 const app = express();
@@ -15,7 +12,9 @@ app.use(bodyParser.json());
 const PostService = require("./services/posts");
 const auth = require("./services/auth");
 const { authBasic } = require("./services/auth");
-const cloudinaryService = require("./services/cloudinary");
+const cloudinary = require("./utils/cloudinary");
+
+const cleanup = require("./utils/cleanup");
 
 /* TODO:
   - tests
@@ -45,14 +44,19 @@ app.get("/postings", PostService.getAllPosts);
 
 app.post("/postings", authBasic, PostService.newPost);
 
-app.put("/postings/:id", authBasic, PostService.checkPostOwner, PostService.editPost);
+app.put(
+  "/postings/:id",
+  authBasic,
+  PostService.checkPostOwner,
+  PostService.editPost
+);
 
 app.post(
   "/postings/:id/upload",
   authBasic,
   PostService.checkPostOwner,
-  imageUploader.upload,
-  cloudinaryService.upload,
+  imageHandler.upload,
+  cloudinary.uploadItems,
   PostService.addImage
 );
 
@@ -68,7 +72,7 @@ app.get("/postings/search/", PostService.searchPosts);
 app.get("/postings/:id", PostService.getPost);
 
 app.listen(port, () => {
-  console.log(process.env.CLOUDINARY_UPLOAD_PRESET);
+  cleanup.startJob();
 
   console.log(`Listening at http://localhost:${port}`);
 });
