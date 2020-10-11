@@ -1,15 +1,11 @@
+const env = require("dotenv").config();
+
 const express = require("express");
 const bodyParser = require("body-parser");
 
 const imageUploader = require("./services/imageUploader");
 
-const cloudinary = require("cloudinary");
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const cloudinary = require("./services/cloudinary");
 
 const port = 3000;
 const app = express();
@@ -32,9 +28,25 @@ const { authBasic } = require("./services/auth");
     /logout
 */
 
-app.post("/test", authBasic, imageUploader.upload, (req, res) => {
-
+app.post("/test", authBasic, imageUploader.upload, async (req, res) => {
   req.files.forEach((file) => console.log(file.filename));
+
+  try {
+    const author = req.user.id;
+    console.log("author: " + author);
+    const image = req.files[1];
+    console.log(image);
+
+    const response = await cloudinary.uploader.upload(
+      "uploads/" + image.filename,
+      {
+        upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
+      }
+    );
+    console.log(response);
+  } catch (e) {
+    console.log(e);
+  }
 
   res.send("Files: " + req.files.length);
 });
@@ -65,5 +77,7 @@ app.get("/postings/search/", PostService.searchPostings);
 app.get("/postings/:id", PostService.getPosting);
 
 app.listen(port, () => {
+  console.log(process.env.CLOUDINARY_UPLOAD_PRESET);
+
   console.log(`Listening at http://localhost:${port}`);
 });
