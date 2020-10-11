@@ -33,6 +33,23 @@ let postings = [
       address: "Tuomiontie 666",
     },
   },
+  {
+    id: "2",
+    createdBy: "2",
+    title: "Kello",
+    price: 3000,
+    location: "Kemi",
+    description: "ranne kELLO",
+    category: "Kellot",
+    images: [{ url: "" }],
+    delivery: false,
+    date: "1969-4-20",
+    contact: {
+      name: "Jorma",
+      phone: "+34582342423",
+      address: "Jokukatu 23",
+    },
+  },
 ];
 
 // Keys that are required when creating a new posting.
@@ -208,7 +225,7 @@ const editPosting = (req, res) => {
 const searchPostings = (req, res) => {
   let searchParams = req.query;
   console.log(searchParams);
-  
+
   if (
     searchParams.location === undefined &&
     searchParams.category === undefined &&

@@ -16,6 +16,7 @@ const { authBasic } = require("./services/auth");
   - proper error response codes.
   - complete post validation
   - proper models for Postings/Users
+  - move posting contact info to registeraion?
   - uninstall non-required packages etc. cleanup.
   - more routes
     /logout
@@ -43,7 +44,6 @@ app.delete("/postings/:id", authBasic, PostService.deletePosting);
 app.get("/postings/search/", PostService.searchPostings);
 
 app.get("/postings/:id", PostService.getPosting);
-
 
 
 
