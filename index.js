@@ -1,8 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const multer = require("multer");
-const path = require("path");
+const imageUploader = require("./services/imageUploader");
+
+const cloudinary = require("cloudinary");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const port = 3000;
 const app = express();
@@ -25,39 +32,11 @@ const { authBasic } = require("./services/auth");
     /logout
 */
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
+app.post("/test", authBasic, imageUploader.upload, (req, res) => {
 
-  // By default, multer removes file extensions
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+  req.files.forEach((file) => console.log(file.filename));
 
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new AppError("Not an image! Please upload an image.", 400), false);
-  }
-};
-
-app.post("/multi", (req, res) => {
-  let upload = multer({
-    storage: storage,
-    fileFilter: multerFilter,
-  }).array("image", 4);
-
-  upload(req, res, function (err) {
-    const files = req.files;
-    let index, len;
-    console.log(files.length);
-    let result = "Uploaded " + files.length + " images.";
-
-    res.send(result);
-  });
+  res.send("Files: " + req.files.length);
 });
 
 app.get("/", (req, res) => {
@@ -74,6 +53,8 @@ app.post("/register", auth.registerUser);
 app.get("/postings", PostService.getAllPostings);
 
 app.post("/postings", authBasic, PostService.newPosting);
+
+app.post("/postings/:id/upload", authBasic, PostService.addImage);
 
 app.put("/postings/:id", authBasic, PostService.editPosting);
 

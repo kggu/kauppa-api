@@ -1,3 +1,5 @@
+const uploader = require("./imageUploader");
+
 let postings = [
   {
     id: "0",
@@ -61,7 +63,7 @@ const validPostingKeys = [
   "delivery",
   "price",
   "contact",
-  "location"
+  "location",
 ];
 
 const getAllPostings = (req, res) => {
@@ -150,6 +152,22 @@ const newPosting = (req, res) => {
   } catch (e) {
     console.log(e);
     res.status(500).send("something went wrong!!!111");
+    return;
+  }
+};
+
+const addImage = (req, res) => {
+  const id = req.params.id;
+  const userId = req.user.id;
+
+  let index = postings.findIndex((post) => post.id == id);
+
+  if (index == -1) {
+    res.status(404).send("Posting not found!");
+    return;
+  }
+  if (postings[index].createdBy != userId) {
+    res.status("403").send("Uploading forbidden!");
     return;
   }
 };
@@ -257,6 +275,7 @@ module.exports = {
   getAllPostings,
   getPosting,
   newPosting,
+  addImage,
   isValidPost,
   deletePosting,
   editPosting,
