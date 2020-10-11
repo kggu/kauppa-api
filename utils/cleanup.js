@@ -1,23 +1,9 @@
-// implement uploads/ folder cleanup.
-
-const CronJob = require("cron").CronJob;
 const fs = require("fs");
 
-var job = new CronJob(
-  "*/1 * * * *",
-  function () {
-    console.log("1 minute!");
-  },
-  null,
-  true
-);
+const clearDirectoryWithInterval = async (intervalMs, userId) => {
+  const tmpDir = "uploads/" + userId + "/";
 
-const startJob = () => {
-  job.start();
-};
-
-const clearDirectoryWithInterval = async (intervalMs) => {
-  const tmpDir = "uploads\\";
+  console.log("cleaning: " + tmpDir);
 
   fs.readdir(tmpDir, { withFileTypes: true }, (err, files) => {
     if (err) {
@@ -62,5 +48,4 @@ const clearDirectoryWithInterval = async (intervalMs) => {
 
 module.exports = {
   clearDirectoryWithInterval,
-  startJob,
 };

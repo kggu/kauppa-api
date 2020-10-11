@@ -18,7 +18,6 @@ const cleanup = require("./utils/cleanup");
 
 /* TODO:
   - tests
-  - local cleanup for images
   - cleanup auth code
   - proper error response codes.
   - complete post validation
@@ -72,7 +71,5 @@ app.get("/postings/search/", PostService.searchPosts);
 app.get("/postings/:id", PostService.getPost);
 
 app.listen(port, () => {
-  cleanup.startJob();
-
   console.log(`Listening at http://localhost:${port}`);
 });

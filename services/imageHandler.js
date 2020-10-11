@@ -7,9 +7,10 @@ const storage = multer.diskStorage({
     const userDir = "uploads/" + req.user.id;
 
     if (!fs.existsSync(userDir)) {
+      console.log("creating user dir " + userDir);
       fs.mkdirSync(userDir);
     }
-    
+
     cb(null, userDir);
   },
 

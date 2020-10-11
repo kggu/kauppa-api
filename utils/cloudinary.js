@@ -1,4 +1,5 @@
 const cloudinary = require("cloudinary").v2;
+const cleanup = require("./cleanup");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,13 +13,9 @@ const uploadItems = async (req, res, next) => {
   let uploadedImages = [];
   try {
     for (const file of req.files) {
-
-      const response = await cloudinary.uploader.upload(
-        file.path,
-        {
-          upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
-        }
-      );
+      const response = await cloudinary.uploader.upload(file.path, {
+        upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
+      });
 
       console.log(response);
 
@@ -30,11 +27,15 @@ const uploadItems = async (req, res, next) => {
     }
   } catch (e) {
     console.log(e);
+    cleanup.clearDirectoryWithInterval(0, req.user.id);
     next(500, false);
   }
 
   console.log(uploadedImages);
   req.images = uploadedImages;
+
+  cleanup.clearDirectoryWithInterval(0, req.user.id);
+
   next(null, true);
 };
 
