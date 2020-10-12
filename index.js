@@ -19,9 +19,8 @@ const cloudinary = require("./utils/cloudinary");
   - cleanup auth code
   - add explaining comments.
   - make search case-insensetive
-  - rework post validation
+  - check for max images
   - proper models for Postings/Users
-  - move posting contact info to registeraion?
 */
 
 app.get("/", (req, res) => {

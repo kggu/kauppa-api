@@ -1,3 +1,5 @@
+const utils = require("../utils/getTimeDate");
+
 let postings = [
   {
     id: "0",
@@ -7,7 +9,7 @@ let postings = [
     location: "Oulu",
     description: "testest",
     category: "Pelit",
-    images: [{ url: "" }],
+    images: [],
     delivery: true,
     date: "1900-01-10",
     contact: {
@@ -20,10 +22,10 @@ let postings = [
     createdBy: "2",
     title: "Testposting",
     price: 200,
-    location: "Kemi",
+    location: "kemi",
     description: "testest",
     category: "Kellot",
-    images: [{ url: "" }],
+    images: [],
     delivery: true,
     date: "1900-01-10",
     contact: {
@@ -36,10 +38,10 @@ let postings = [
     createdBy: "2",
     title: "Kello",
     price: 3000,
-    location: "Kemi",
+    location: "KEMI",
     description: "ranne kELLO",
     category: "Kellot",
-    images: [{ url: "" }],
+    images: [],
     delivery: false,
     date: "1969-4-20",
     contact: {
@@ -48,6 +50,20 @@ let postings = [
     },
   },
 ];
+
+const postConfig = {
+  maxImages: 4, // Number of allowed images in post
+  validPostingKeys: [
+    // Keys that are required when creating a new posting.
+    "title",
+    "price",
+    "location",
+    "description",
+    "category",
+    "delivery",
+    //"contact" -> get from req.user
+  ],
+};
 
 const getAllPosts = (req, res) => {
   res.json(postings);
@@ -79,7 +95,7 @@ const getPost = (req, res) => {
   res.status(200).json(post);
 };
 
-const getTimeDate = () => {
+/*const getTimeDate = () => {
   let date = new Date();
   return (
     date.getFullYear() +
@@ -94,23 +110,16 @@ const getTimeDate = () => {
     ":" +
     date.getSeconds()
   );
-};
-
-// Keys that are required when creating a new posting.
-const validPostingKeys = [
-  "title",
-  "price",
-  "location",
-  "description",
-  "category",
-  "delivery",
-  //"contact" -> get from req.user
-];
+}; */
 
 const isValidPost = (posting) => {
   console.log(posting);
   // Check if we have all the valid keys. "title" "description" "category" "delivery" "price" "contact"
-  if (!validPostingKeys.every((key) => Object.keys(posting).includes(key))) {
+  if (
+    !postConfig.validPostingKeys.every((key) =>
+      Object.keys(posting).includes(key)
+    )
+  ) {
     return false;
   }
   if (posting.price < 0) {
@@ -143,7 +152,7 @@ const newPost = (req, res) => {
       category: post.category,
       images: [],
       delivery: post.delivery,
-      date: getTimeDate(),
+      date: utils.getTimeDate(),
       contact: {
         name: req.user.username,
         email: req.user.email,
@@ -170,6 +179,17 @@ const addImage = (req, res) => {
 
   postings[index].images.push(req.images);
   res.status(200).send("Images uploaded!");
+};
+
+const getNumberOfImages = (id) => {
+  let index = postings.findIndex((post) => post.id == id);
+  console.log("posting: ");
+  console.log(postings[index]);
+  console.log(
+    "post " + id + " has " + postings[index].images.length + " images."
+  );
+
+  return postings[index].images.length;
 };
 
 const getLatestId = () => {
@@ -224,7 +244,9 @@ const editPost = (req, res) => {
       title: req.body.title ? req.body.title : ogPost.title,
       price: req.body.price ? req.body.price : ogPost.price,
       location: req.body.location ? req.body.location : ogPost.location,
-      description: req.body.description ? req.body.description : ogPost.description,
+      description: req.body.description
+        ? req.body.description
+        : ogPost.description,
       category: req.body.category ? req.body.category : ogPost.category,
       images: ogPost.images, // not allowed, use addImage feature.
       delivery: req.body.delivery ? req.body.delivery : ogPost.delivery,
@@ -244,6 +266,7 @@ const editPost = (req, res) => {
 
 const searchPosts = (req, res) => {
   let searchParams = req.query;
+
   console.log(searchParams);
 
   if (
@@ -266,7 +289,7 @@ const searchPosts = (req, res) => {
 
   console.log(searchResult);
   if (searchResult.length === 0) {
-    res.status(200).send([])
+    res.status(200).send([]);
     return;
   }
 
@@ -274,10 +297,12 @@ const searchPosts = (req, res) => {
 };
 
 module.exports = {
+  postConfig,
   getAllPosts,
   getPost,
   newPost,
   addImage,
+  getNumberOfImages,
   isValidPost,
   deletePost,
   editPost,
