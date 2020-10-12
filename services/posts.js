@@ -277,10 +277,13 @@ const searchPosts = (req, res) => {
     res.status(400).send("No search parameters!");
     return;
   }
-
+  // Search case insensetive
   let searchResult = postings.filter((item) => {
     for (let key in searchParams) {
-      if (item[key] === undefined || item[key] != searchParams[key]) {
+      if (
+        item[key] === undefined ||
+        item[key].toLowerCase() != searchParams[key].toLowerCase()
+      ) {
         return false;
       }
       return true;

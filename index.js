@@ -16,10 +16,8 @@ const cloudinary = require("./utils/cloudinary");
 
 /* TODO:
   - tests
-  - cleanup auth code
-  - add explaining comments.
+  - implement JWT sessions
   - make search case-insensetive
-  - check for max images
   - proper models for Postings/Users
 */
 
