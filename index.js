@@ -17,7 +17,6 @@ const cloudinary = require("./utils/cloudinary");
 /* TODO:
   - tests
   - implement JWT sessions
-  - make search case-insensetive
   - proper models for Postings/Users
 */
 
