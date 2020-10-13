@@ -7,4 +7,4 @@
 # CLOUDINARY_API_SECRET = Your Cloudinary API secret.
 # CLOUDINARY_CLOUD_NAME = Your cloudinary cloud name.
 # CLOUDINARY_UPLOAD_PRESET = Your cloudinary upload preset.
-
+# JWT_SECRET_KEY = Your JWT secret key.
