@@ -95,22 +95,6 @@ const getPost = (req, res) => {
   res.status(200).json(post);
 };
 
-/*const getTimeDate = () => {
-  let date = new Date();
-  return (
-    date.getFullYear() +
-    "-" +
-    (date.getMonth() + 1) +
-    "-" +
-    date.getDate() +
-    " " +
-    date.getHours() +
-    ":" +
-    date.getMinutes() +
-    ":" +
-    date.getSeconds()
-  );
-}; */
 
 const isValidPost = (posting) => {
   console.log(posting);
@@ -198,9 +182,7 @@ const getLatestId = () => {
 
 // TODO: refactor variables.
 const deletePost = (req, res) => {
-  const id = req.params.id;
-  const userId = req.user.id;
-  let index = postings.findIndex((post) => post.id == id);
+  let index = postings.findIndex((post) => post.id == req.params.id);
 
   if (index == -1) {
     res.status(404).send("Posting not found!");
@@ -218,11 +200,8 @@ const deletePost = (req, res) => {
   }
 };
 
-// TODO:Re-check validation logic.
 const editPost = (req, res) => {
   const newPost = req.body;
-  const userId = req.user.id;
-  const id = req.params.id;
 
   if (!isValidPost(newPost)) {
     res.status(400).send("Invalid request");
@@ -237,7 +216,7 @@ const editPost = (req, res) => {
 
   try {
     let ogPost = postings[index];
-    // Swap allowed keys with new info
+    // Swap allowed keys with new info, if they exist in the request.
     let newPost = {
       id: ogPost.id, // not allowed
       createdBy: ogPost.createdBy, // not allowed
@@ -258,11 +237,10 @@ const editPost = (req, res) => {
     res.status(200).send("Posting edited!");
   } catch (e) {
     console.log(e);
-    res.sendStatus(500);
+    res.status(500).send("Internal server error");
     return;
   }
 };
-// http://localhost:3000/postings/search?location=Oulu&category=Pelit&date=2020-10-13
 
 const searchPosts = (req, res) => {
   let searchParams = req.query;
@@ -277,7 +255,7 @@ const searchPosts = (req, res) => {
     res.status(400).send("No search parameters!");
     return;
   }
-  // Search case insensetive
+  // Case insensetive
   let searchResult = postings.filter((item) => {
     for (let key in searchParams) {
       if (
@@ -304,11 +282,11 @@ module.exports = {
   getAllPosts,
   getPost,
   newPost,
-  addImage,
-  getNumberOfImages,
   isValidPost,
   deletePost,
   editPost,
+  addImage,
+  getNumberOfImages,
   searchPosts,
   checkPostOwner,
 };

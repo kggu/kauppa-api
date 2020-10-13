@@ -29,7 +29,7 @@ const getUserByName = (username) => {
   return users.find((u) => u.username == username);
 };
 
-const getUserById = (username) => {
+const getUserById = (id) => {
   return users.find((u) => u.id == id);
 };
 
