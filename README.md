@@ -1,6 +1,6 @@
 # kauppa-api
  School assingment for Building Cloud Integration 2020  
- Deployed on [https://kauppa-api.herokuapp.com/](heroku)
+ Deployed on [heroku](https://kauppa-api.herokuapp.com/)
  
 # Setup
 - npm install
