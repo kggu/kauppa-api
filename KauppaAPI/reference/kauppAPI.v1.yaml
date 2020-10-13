@@ -1,0 +1,380 @@
+openapi: 3.0.0
+info:
+  title: kauppAPI
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /login:
+    post:
+      summary: Log in
+      operationId: post-login
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+      description: Endpoint is used to login with username and password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+  /register:
+    post:
+      summary: Register
+      operationId: post-register
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+            examples: {}
+  '/postings/{id}':
+    get:
+      summary: Get specificed posting
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post'
+      operationId: get-posting
+      description: Endpoint is used to get specified postings
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: Delete specified posting
+      operationId: delete-postings
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+      description: Endpoint is used to delete specified posting
+      security:
+        - HTTPBasic: []
+    put:
+      summary: Edit specificed posting
+      operationId: put-postings-id
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+      description: Endpoint is used to edit specified posting
+      security:
+        - HTTPBasic: []
+  /postings/search:
+    parameters: []
+    get:
+      summary: Search postings
+      operationId: search-postings
+      responses:
+        '200':
+          description: OK
+      description: Search postings based on category. location and date.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: category
+        - schema:
+            type: string
+          in: query
+          name: location
+        - schema:
+            type: string
+          in: query
+          name: date
+          description: ISO 8601
+  /postings:
+    get:
+      summary: Get all postings
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post'
+              examples:
+                example-1:
+                  value:
+                    id: 0
+                    createdBy: 0
+                    title: string
+                    price: string
+                    location: string
+                    description: string
+                    category: string
+                    images:
+                      - url: string
+                    delivery: true
+                    date: string
+                    contact:
+                      name: string
+                      email: string
+      operationId: get-postings
+      description: Get all postings
+    parameters: []
+    post:
+      summary: Create new posting
+      operationId: post-postings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/post'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+      description: Create a new posting
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/post'
+            examples:
+              example-1:
+                value:
+                  id: 0
+                  createdBy: 0
+                  title: string
+                  price: string
+                  location: string
+                  description: string
+                  category: string
+                  images:
+                    - url: string
+                  delivery: true
+                  date: string
+                  contact:
+                    name: string
+                    email: string
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+      security:
+        - HTTPBasic: []
+  '/postings/{id}/upload':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    post:
+      summary: Upload images to post
+      operationId: post-postings-id-upload
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    user:
+      title: user
+      type: object
+      description: User model
+      x-examples:
+        example-1:
+          id: 1234
+          username: erkkiesim
+          password: Password123
+          email: erkki.esimerkki@email.com
+      properties:
+        id:
+          type: number
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+      required:
+        - username
+        - password
+    post:
+      title: posting
+      type: object
+      description: User made listing
+      x-examples:
+        example-1:
+          id: 12434
+          createdBy: 1
+          title: Kello
+          price: '48000'
+          location: Oulu
+          description: Vitun hieno kello
+          category: Kellot
+          images:
+            - url: string
+          delivery: true
+          date: '2020-08-24'
+          contact:
+            name: Erkki Esimerkki
+            email: erkki.esimerkki@email.com
+      properties:
+        id:
+          type: number
+        createdBy:
+          type: number
+        title:
+          type: string
+        price:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/image'
+        delivery:
+          type: boolean
+        date:
+          type: string
+          description: ISO 8601
+        contact:
+          $ref: '#/components/schemas/contact'
+      required:
+        - title
+        - price
+        - location
+        - description
+        - category
+        - delivery
+    contact:
+      title: contact
+      type: object
+      x-examples:
+        example-1:
+          name: Erkki Esimerkki
+          email: erkki.esimerkki@email.com
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+    image:
+      title: image
+      type: object
+      properties:
+        url:
+          type: string
+    error:
+      title: ErrorResponse
+      type: object
+      description: ''
+      properties:
+        errorMessage:
+          type: string
+      required:
+        - errorMessage
+  securitySchemes:
+    HTTPBasic:
+      type: http
+      scheme: basic
