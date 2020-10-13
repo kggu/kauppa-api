@@ -4,7 +4,7 @@ const BasicStrategy = require("passport-http").BasicStrategy;
 const users = require("./users");
 
 // JWT --
-const jwtSecretKey = require("../jwt-key.json");
+const jwtSecretKey = process.env.JWT_SECRET_KEY
 const jwt = require("jsonwebtoken");
 const JwtStrategy = require("passport-jwt").Strategy,
   ExtractJwt = require("passport-jwt").ExtractJwt;
@@ -36,7 +36,7 @@ const basic = passport.authenticate("basic", { session: false });
 /* Configure the passport-jwt module to expect JWT
    in headers from Authorization field as Bearer token */
 options.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-options.secretOrKey = jwtSecretKey.secret;
+options.secretOrKey = jwtSecretKey;
 
 const registerUser = (req, res) => {
   if ("username" in req.body == false) {
@@ -81,7 +81,7 @@ const generateJWT = (req, res) => {
   /* Sign the token with payload, key and options.
        Detailed documentation of the signing here:
        https://github.com/auth0/node-jsonwebtoken#readme */
-  const token = jwt.sign(payload, jwtSecretKey.secret, options);
+  const token = jwt.sign(payload, jwtSecretKey, options);
 
   return res.json({ token });
 };
