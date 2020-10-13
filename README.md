@@ -1,8 +1,11 @@
 # kauppa-api
- School assingment for Building Cloud Integration 2020
+ School assingment for Building Cloud Integration 2020  
  Deployed on [https://kauppa-api.herokuapp.com/](heroku)
  
-# Setup .env
+# Setup
+- npm install
+- Rename env.example -> .env
+# .env variables
 - CLOUDINARY_API_KEY : Your Cloudinary API key.
 - CLOUDINARY_API_SECRET = Your Cloudinary API secret.
 - CLOUDINARY_CLOUD_NAME = Your cloudinary cloud name.
