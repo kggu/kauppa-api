@@ -1,6 +1,6 @@
 # kauppa-api
  School assingment for Building Cloud Integration 2020  
- Deployed on [heroku](https://kauppa-api.herokuapp.com/)
+ Deployed on [heroku](https://kauppa-api.herokuapp.com/) , documentation is hosted at [/docs](https://kauppa-api.herokuapp.com/docs)
  
  # Info for review
  - No tests are implemented.
