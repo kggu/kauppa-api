@@ -6,30 +6,17 @@ servers:
   - url: 'http://localhost:3000'
 paths:
   /login:
-    post:
+    get:
       summary: Log in
-      operationId: post-login
+      operationId: get-login
       responses:
         '200':
           description: OK
         '401':
           description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
       description: Endpoint is used to login with username and password
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/user'
+      security:
+        - HTTPBasic: []
   /register:
     post:
       summary: Register
@@ -53,18 +40,13 @@ paths:
                 type: object
                 properties: {}
           headers: {}
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/user'
             examples: {}
+      description: Register a new user
   '/postings/{id}':
     get:
       summary: Get specificed posting
@@ -76,6 +58,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/post'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
       operationId: get-posting
       description: Endpoint is used to get specified postings
     parameters:
@@ -90,6 +76,8 @@ paths:
       responses:
         '200':
           description: OK
+        '401':
+          description: Unauthorized
         '403':
           description: Forbidden
           content:
@@ -119,6 +107,8 @@ paths:
           description: OK
         '400':
           description: Bad Request
+        '401':
+          description: Unauthorized
         '403':
           description: Forbidden
           content:
@@ -148,6 +138,8 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Bad Request
       description: Search postings based on category. location and date.
       parameters:
         - schema:
@@ -198,8 +190,8 @@ paths:
       summary: Create new posting
       operationId: post-postings
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           content:
             application/json:
               schema:
@@ -264,12 +256,25 @@ paths:
           description: OK
         '400':
           description: Bad Request
+        '401':
+          description: Unauthorized
         '403':
           description: Forbidden
         '404':
           description: Not Found
         '500':
           description: Internal Server Error
+      security:
+        - HTTPBasic: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: object
+        description: Image key is file
 components:
   schemas:
     user:
