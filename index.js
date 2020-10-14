@@ -7,8 +7,8 @@ const port = process.env.PORT || 3000;
 const app = express();
 app.use(bodyParser.json());
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../reference/api-docs.json');
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./reference/api-docs.json");
 
 const PostService = require("./services/posts");
 const auth = require("./services/auth");
@@ -19,8 +19,8 @@ app.get("/", (req, res) => {
   res.send("kauppa-api, documentation is at /docs");
 });
 
-app.use("/docs", swaggerUi.serve)
-app.get("/docs", swaggerUi.setup(swaggerDocument))
+app.use("/docs", swaggerUi.serve);
+app.get("/docs", swaggerUi.setup(swaggerDocument));
 
 app.get("/login", auth.basic, (req, res) => {
   res.status(200).send("Logged in!");
@@ -58,7 +58,6 @@ app.post(
 );
 
 app.get("/postings/search/", PostService.searchPosts);
-
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);
