@@ -8,17 +8,9 @@ const app = express();
 app.use(bodyParser.json());
 
 const PostService = require("./services/posts");
-
 const auth = require("./services/auth");
-
 const localFiles = require("./services/localFiles");
 const cloudinary = require("./utils/cloudinary");
-
-/* TODO:
-  - tests
-  - maybe implement JWT?
-  - rename error responses
-*/
 
 app.get("/", (req, res) => {
   res.send("kauppa-api");
@@ -27,9 +19,6 @@ app.get("/", (req, res) => {
 app.get("/login", auth.basic, (req, res) => {
   res.status(200).send("Logged in!");
 });
-app.get("/user", auth.basic, (req, res) => {
-  res.json(req.user);
-});
 
 app.post("/register", auth.registerUser);
 
@@ -37,11 +26,20 @@ app.get("/postings", PostService.getAllPosts);
 
 app.post("/postings", auth.basic, PostService.newPost);
 
+app.get("/postings/:id", PostService.getPost);
+
 app.put(
   "/postings/:id",
   auth.basic,
   PostService.checkPostOwner,
   PostService.editPost
+);
+
+app.delete(
+  "/postings/:id",
+  auth.basic,
+  PostService.checkPostOwner,
+  PostService.deletePost
 );
 
 app.post(
@@ -53,16 +51,8 @@ app.post(
   PostService.addImage
 );
 
-app.delete(
-  "/postings/:id",
-  auth.basic,
-  PostService.checkPostOwner,
-  PostService.deletePost
-);
-
 app.get("/postings/search/", PostService.searchPosts);
 
-app.get("/postings/:id", PostService.getPost);
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);
