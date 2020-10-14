@@ -2,10 +2,12 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+const { postConfig } = require("./posts");
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const userDir = "uploads/" + req.user.id;
-    // Create each user their own temp dir, so we don't accidentally clear user files mid-upload
+    // Create each user their own temp dir
     if (!fs.existsSync(userDir)) {
       console.log("creating user dir " + userDir);
       fs.mkdirSync(userDir);
@@ -38,7 +40,7 @@ const multerFilter = (req, file, cb) => {
 let upload = multer({
   storage: storage,
   fileFilter: multerFilter,
-}).array("image", 4);
+}).array("image", postConfig.maxImages);
 
 module.exports = {
   upload,

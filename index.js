@@ -11,13 +11,13 @@ const PostService = require("./services/posts");
 
 const auth = require("./services/auth");
 
-const imageHandler = require("./services/imageHandler");
+const localFiles = require("./services/localFiles");
 const cloudinary = require("./utils/cloudinary");
 
 /* TODO:
   - tests
-  - implement JWT sessions
-  - proper models for Postings/Users
+  - maybe implement JWT?
+  - rename error responses
 */
 
 app.get("/", (req, res) => {
@@ -48,7 +48,7 @@ app.post(
   "/postings/:id/upload",
   auth.basic,
   PostService.checkPostOwner,
-  imageHandler.upload,
+  localFiles.upload,
   cloudinary.uploadItems,
   PostService.addImage
 );

@@ -11,11 +11,11 @@ cloudinary.config({
 const uploadItems = async (req, res, next) => {
   req.files.forEach((file) => console.log(file.path));
 
+  // Check if user is trying to upload more images than is allowed.
   const numberOfImages = getNumberOfImages(req.params.id);
   if (numberOfImages + req.files.length >= postConfig.maxImages) {
     cleanup.clearDirectoryWithInterval(0, req.user.id);
-    console.log(postConfig.maxImages);
-    console.log(numberOfImages);
+
     res
       .status(400)
       .send(postConfig.maxImages - numberOfImages + " more can be uploaded.");
@@ -28,8 +28,6 @@ const uploadItems = async (req, res, next) => {
       const response = await cloudinary.uploader.upload(file.path, {
         upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
       });
-
-      console.log(response);
 
       let imageObject = {
         url: response.secure_url,

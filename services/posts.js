@@ -4,11 +4,11 @@ let postings = [
   {
     id: "0",
     createdBy: "1",
-    title: "Test",
-    price: 50,
+    title: "Matto",
+    price: 0,
     location: "Oulu",
-    description: "testest",
-    category: "Pelit",
+    description: "Ilmanen matto",
+    category: "Matot",
     images: [],
     delivery: true,
     date: "1900-01-10",
@@ -70,7 +70,7 @@ const getAllPosts = (req, res) => {
 };
 
 const checkPostOwner = (req, res, next) => {
-  let index = postings.findIndex((post) => post.id == req.params.id);
+  const index = postings.findIndex((post) => post.id == req.params.id);
 
   if (postings[index].createdBy != req.user.id) {
     res.status("403").send("Action forbidden!");
@@ -95,10 +95,8 @@ const getPost = (req, res) => {
   res.status(200).json(post);
 };
 
-
 const isValidPost = (posting) => {
-  console.log(posting);
-  // Check if we have all the valid keys. "title" "description" "category" "delivery" "price" "contact"
+  // Check if we have all the valid keys.
   if (
     !postConfig.validPostingKeys.every((key) =>
       Object.keys(posting).includes(key)
@@ -109,14 +107,25 @@ const isValidPost = (posting) => {
   if (posting.price < 0) {
     return false;
   }
+  if (isNaN(posting.price)) {
+    return false;
+  }
   if (posting.title.length === 0 || posting.description.length === 0) {
+    return false;
+  }
+  if (posting.location.length === 0) {
+    return false;
+  }
+  if (posting.category.length === 0) {
+    return false;
+  }
+  if (typeof posting.delivery !== "boolean") {
     return false;
   }
 
   return true;
 };
 
-//TODO: refactor variables.
 const newPost = (req, res) => {
   const post = req.body;
 
@@ -154,7 +163,7 @@ const newPost = (req, res) => {
 };
 
 const addImage = (req, res) => {
-  let index = postings.findIndex((post) => post.id == req.params.id);
+  const index = postings.findIndex((post) => post.id == req.params.id);
 
   if (index == -1) {
     res.status(404).send("Posting not found!");
@@ -166,9 +175,7 @@ const addImage = (req, res) => {
 };
 
 const getNumberOfImages = (id) => {
-  let index = postings.findIndex((post) => post.id == id);
-  console.log("posting: ");
-  console.log(postings[index]);
+  const index = postings.findIndex((post) => post.id == id);
   console.log(
     "post " + id + " has " + postings[index].images.length + " images."
   );
@@ -180,9 +187,8 @@ const getLatestId = () => {
   return postings.length;
 };
 
-// TODO: refactor variables.
 const deletePost = (req, res) => {
-  let index = postings.findIndex((post) => post.id == req.params.id);
+  const index = postings.findIndex((post) => post.id == req.params.id);
 
   if (index == -1) {
     res.status(404).send("Posting not found!");
@@ -208,7 +214,7 @@ const editPost = (req, res) => {
     return;
   }
 
-  let index = postings.findIndex((post) => post.id == req.params.id);
+  const index = postings.findIndex((post) => post.id == req.params.id);
   if (index == -1) {
     res.status(404).send("Posting not found!");
     return;
