@@ -2,6 +2,10 @@
  School assingment for Building Cloud Integration 2020  
  Deployed on [heroku](https://kauppa-api.herokuapp.com/)
  
+ # Info for review
+ - No tests are implemented.
+ - Only http-basic authentication is implemented.
+ 
 # Setup
 - npm install
 - Rename env.example -> .env
