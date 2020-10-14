@@ -8,7 +8,7 @@
  
 # Setup
 - npm install
-- Rename env.example -> .env
+- Rename env.example -> .env, fill the fields with required variables.
 - npm start
 # .env variables
 - CLOUDINARY_API_KEY : Your Cloudinary API key.
