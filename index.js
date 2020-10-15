@@ -32,6 +32,8 @@ app.get("/postings", PostService.getAllPosts);
 
 app.post("/postings", auth.basic, PostService.newPost);
 
+app.get("/postings/search/", PostService.searchPosts);
+
 app.get("/postings/:id", PostService.getPost);
 
 app.put(
@@ -57,7 +59,7 @@ app.post(
   PostService.addImage
 );
 
-app.get("/postings/search/", PostService.searchPosts);
+
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);
